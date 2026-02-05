@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CFO Playbook Survey | Altus Nova</title>
+    <meta name="description" content="How CFOs Are Actually Creating Value with Data & AI. Share your experience in 5-7 minutes.">
+
+    <!-- Fonts: Oswald (display) + Roboto (body) from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Progress Bar (visible during questions) -->
+    <div id="progress-bar" class="progress-bar" aria-hidden="true">
+        <div id="progress-fill" class="progress-fill"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header__logos">
+            <!-- Altus Nova logo - geometric "A" mark -->
+            <div class="header__logo-group">
+                <svg class="logo" width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Altus Nova">
+                    <path d="M20 4L4 36h8l8-16 8 16h8L20 4zm0 12l4 8h-8l4-8z" fill="currentColor"/>
+                </svg>
+                <span class="logo-text">Altus Nova</span>
+            </div>
+            <span class="header__separator">+</span>
+            <!-- Blue Yeti logo -->
+            <img src="blueyeti-logo.png" alt="Blue Yeti" class="logo-img" height="28">
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+
+        <!-- Screen 1: Landing -->
+        <div id="screen-landing" class="screen active">
+            <div class="landing">
+                <p class="landing__label">CFO Playbook Survey</p>
+                <h1 class="landing__headline">How CFOs Are Actually Creating Value with Data & AI</h1>
+                <p class="landing__body">Finance leaders are under pressure to create value without financial engineering. The era of cheap debt and multiple expansion is over.</p>
+                <p class="landing__body">We're studying which data- and AI-driven plays CFOs are planning, what they have actually run, what worked, and where execution broke down.</p>
+                <p class="landing__body landing__body--emphasis">This is not a vendor survey. We'll share anonymized results with participants.</p>
+                <button id="btn-start" class="btn btn--primary">Start Survey</button>
+                <p class="landing__meta">18 questions &middot; 5-7 minutes &middot; No login required</p>
+            </div>
+        </div>
+
+        <!-- Screen 2: Question -->
+        <div id="screen-question" class="screen">
+            <div class="question">
+                <button id="btn-back-question" class="btn-back" type="button" aria-label="Go back">&larr; Back</button>
+                <p class="question__section" id="question-section"></p>
+                <p class="question__counter" id="question-counter"></p>
+                <h2 class="question__text" id="question-text"></h2>
+                <p class="question__subtext" id="question-subtext"></p>
+                <div class="question__answers" id="question-answers"></div>
+                <div class="question__other-input" id="other-input-container" hidden>
+                    <label for="other-input">Please specify:</label>
+                    <input type="text" id="other-input" placeholder="Type your answer...">
+                </div>
+                <div class="question__tooltip" id="question-tooltip" hidden>
+                    <p class="question__tooltip-label">Did you know?</p>
+                    <p class="question__tooltip-body" id="tooltip-body"></p>
+                </div>
+                <button id="btn-next" class="btn btn--primary question__next" hidden>Next</button>
+            </div>
+        </div>
+
+        <!-- Screen 3: Gate (Contact Form) -->
+        <div id="screen-gate" class="screen">
+            <div class="gate">
+                <button id="btn-back-gate" class="btn-back" type="button" aria-label="Go back">&larr; Back</button>
+                <h2 class="gate__headline">Where should we send your benchmark results?</h2>
+                <p class="gate__subhead">We'll compile anonymized results and share them with participants in the coming weeks.</p>
+                <form id="gate-form" class="form" novalidate>
+                    <div class="form__field">
+                        <label for="field-name">Full Name <span class="required">*</span></label>
+                        <input type="text" id="field-name" name="name" required autocomplete="name">
+                    </div>
+                    <div class="form__field">
+                        <label for="field-email">Work Email <span class="required">*</span></label>
+                        <input type="email" id="field-email" name="email" required autocomplete="email">
+                    </div>
+                    <div class="form__field">
+                        <label for="field-company">Company <span class="optional">(optional)</span></label>
+                        <input type="text" id="field-company" name="company" autocomplete="organization">
+                    </div>
+                    <button type="submit" class="btn btn--primary">Submit & See Results</button>
+                    <p class="form__privacy">Your information is secure and will not be shared with third parties.</p>
+                </form>
+            </div>
+        </div>
+
+        <!-- Screen 4: Thank You -->
+        <div id="screen-thanks" class="screen">
+            <div class="thanks">
+                <h2 class="thanks__headline">Thanks for sharing your perspective</h2>
+                <p class="thanks__body">We'll compile anonymized results and share them with participants in the coming weeks.</p>
+                <p class="thanks__body">In the meantime, if you haven't already:</p>
+                <a href="https://docs.google.com/document/d/1Cr4p_PzN4ORnFngp4lMvQsgTYbrdkDpES1_MwVw-am4/edit" target="_blank" rel="noopener" class="btn btn--primary">Download the Full CFO Playbook</a>
+                <p class="thanks__contact">Questions? Reach out to Jason Parrish at <a href="mailto:jason@altusnova.com">jason@altusnova.com</a></p>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
