@@ -11,6 +11,27 @@ const CONFIG = {
   submitEndpoint: ''
 };
 
+// ===== PLAY HEADERS =====
+// Shown at the start of each play section
+const PLAY_HEADERS = {
+  'Play 1': {
+    title: 'Funding the Future: Data-Driven Capital Allocation',
+    summary: 'Build an intelligent capital allocation process where every investment is rigorously vetted and the portfolio is optimized for risk-adjusted return.'
+  },
+  'Play 2': {
+    title: 'Architecting Your Pricing & Profitability Engine',
+    summary: 'Transform gut-feel pricing into a data-driven strategy that reveals exactly where margin is leaking and where opportunities exist.'
+  },
+  'Play 3': {
+    title: 'Fueling Growth with Operational Cash',
+    summary: 'Unlock cash hidden in operational inefficiency and multiply your team\'s output to fund growth from within.'
+  },
+  'Play 4': {
+    title: 'Building the Engine for Real-Time & Predictive Decisions',
+    summary: 'Transform finance from reporting the past to predicting the future with AI-powered forecasting and scenario planning.'
+  }
+};
+
 // ===== QUESTIONS DATA =====
 // Source: CFO-Playbook-Survey-Content.md
 const QUESTIONS = [
@@ -76,12 +97,12 @@ const QUESTIONS = [
   {
     id: 4,
     section: 'Play 1: Capital Allocation',
-    text: "What's been the biggest challenge with capital allocation?",
+    text: "What's been the biggest challenge in using data in your capital allocation process?",
     type: 'single',
     hasOther: true,
     options: [
       { text: 'Data quality / integration issues' },
-      { text: 'Lack of standardized metrics across BUs' },
+      { text: 'Lack of standardized metrics across business units' },
       { text: 'Business unit resistance to transparency' },
       { text: 'Tooling complexity' },
       { text: 'Executive alignment on criteria' },
@@ -144,7 +165,7 @@ const QUESTIONS = [
   {
     id: 8,
     section: 'Play 3: Operational Cash',
-    text: 'Have you used data or AI to reduce operational friction or increase revenue per employee?',
+    text: 'Have you used data-driven AI to reduce operational friction or increase revenue per employee?',
     type: 'single',
     options: [
       { text: 'Not on our radar', subtext: "Haven't prioritized this" },
@@ -159,7 +180,7 @@ const QUESTIONS = [
   {
     id: 9,
     section: 'Play 3: Operational Cash',
-    text: 'Where have you seen the most impact (or would expect to)?',
+    text: 'When implementing data-driven AI, where have you seen the most impact (or would expect to)?',
     subtext: 'Select up to 3',
     type: 'multi',
     maxSelections: 3,
@@ -175,7 +196,7 @@ const QUESTIONS = [
   {
     id: 10,
     section: 'Play 3: Operational Cash',
-    text: "What's slowed progress on operational productivity?",
+    text: "What has slowed progress on operational productivity?",
     type: 'single',
     options: [
       { text: 'Change management challenges' },
@@ -185,7 +206,7 @@ const QUESTIONS = [
       { text: 'We have the tools but not the culture' },
       { text: "Haven't focused here yet" }
     ],
-    tooltip: "Don't let procurement processes and managers stand in the way of the AI-trailblazers in your organization. The biggest productivity gains often come from one or two 'data athletes' who get permission to experiment. Small pilots with motivated champions outperform top-down mandates."
+    tooltip: "Don't let procurement processes and managers stand in the way of the AI-trailblazers in your organization. The biggest productivity gains often come from one or two 'data athletes' who get permission to experiment. Small pilots with motivated champions can outperform top-down mandates."
   },
 
   // Section B: Play 4 - Real-Time & Predictive Decisioning
@@ -206,7 +227,7 @@ const QUESTIONS = [
   {
     id: 12,
     section: 'Play 4: Predictive Decisioning',
-    text: 'Are leaders using forecasts to change decisions in-flight?',
+    text: 'Are leaders in your company using forecasts to change decisions in-flight?',
     type: 'single',
     options: [
       { text: 'Rarely - forecasts are backward-looking reports' },
@@ -227,7 +248,7 @@ const QUESTIONS = [
       { text: 'Trust in forecast outputs' },
       { text: "Leadership adoption - they don't use it" },
       { text: 'Skills gap on the team' },
-      { text: "We're satisfied with current approach" }
+      { text: "We're satisfied with our current approach" }
     ]
     // No tooltip for Q13
   },
@@ -236,9 +257,9 @@ const QUESTIONS = [
   {
     id: 14,
     section: 'The Missing Play',
-    text: "Is there a major value-creation initiative you've focused on that isn't covered by the four plays above?",
+    text: "Is there a major data-driven value creation initiative you've focused on that isn't covered by the four plays we reviewed?",
     type: 'open',
-    placeholder: 'Describe any data/AI initiative that\'s driven significant value for your organization...',
+    placeholder: 'Describe any data/AI initiative that\'s driven significant value for your organization that\'s not covered by the four plays.',
     optional: true
   },
   {
@@ -267,7 +288,6 @@ const QUESTIONS = [
     type: 'single',
     options: [
       { text: 'Yes - send me anonymized benchmark results' },
-      { text: "Yes - I'd prefer case examples with context" },
       { text: 'Maybe - depends on the quality of insights' },
       { text: 'No thanks' }
     ]
@@ -275,7 +295,7 @@ const QUESTIONS = [
   {
     id: 17,
     section: 'Share Results',
-    text: "We're hosting a peer discussion panel with CFOs who've run these plays. Would you be interested in participating or attending?",
+    text: "We're hosting a peer discussion panel with finance execs who've run these plays. Would you be interested in participating or attending?",
     type: 'single',
     options: [
       { text: "Yes - I'd consider being a panelist" },
@@ -292,7 +312,8 @@ const state = {
   currentQuestion: 0,
   answers: {},
   otherText: {},
-  respondent: null
+  respondent: null,
+  seenPlays: {} // Track which plays have been shown expanded
 };
 
 // ===== DOM REFS =====
@@ -329,6 +350,37 @@ function renderQuestion(index) {
 
   // Back button visibility
   $('#btn-back-question').style.display = index === 0 ? 'none' : '';
+
+  // Check if we need to show a play header
+  const playHeader = $('#play-header');
+  const sectionLabel = $('#question-section');
+  const playMatch = q.section.match(/^Play (\d)/);
+
+  if (playMatch) {
+    const playKey = `Play ${playMatch[1]}`;
+    if (PLAY_HEADERS[playKey]) {
+      const header = PLAY_HEADERS[playKey];
+      $('#play-header-label').textContent = playKey;
+      $('#play-header-title').textContent = header.title;
+      $('#play-header-summary').textContent = header.summary;
+      playHeader.hidden = false;
+      sectionLabel.hidden = true; // Hide the small green label when play header is shown
+
+      // First time seeing this play = expanded, subsequent = collapsed
+      if (!state.seenPlays[playKey]) {
+        playHeader.classList.remove('collapsed');
+        state.seenPlays[playKey] = true;
+      } else {
+        playHeader.classList.add('collapsed');
+      }
+    } else {
+      playHeader.hidden = true;
+      sectionLabel.hidden = false;
+    }
+  } else {
+    playHeader.hidden = true;
+    sectionLabel.hidden = false;
+  }
 
   // Section and counter
   $('#question-section').textContent = q.section;
@@ -720,6 +772,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Back buttons
   $('#btn-back-question').addEventListener('click', goBack);
   $('#btn-back-gate').addEventListener('click', () => renderQuestion(QUESTIONS.length - 1));
+
+  // Play header toggle (expand/collapse)
+  $('#play-header-toggle').addEventListener('click', () => {
+    const playHeader = $('#play-header');
+    playHeader.classList.toggle('collapsed');
+  });
 
   // Form submit
   $('#gate-form').addEventListener('submit', submitForm);

@@ -20,17 +20,17 @@
   --color-danger: #ef4444;
   --color-teal: #44bdac;
 
-  /* Typography - Altus Nova */
+  /* Typography - Altus Nova (increased for readability) */
   --font-headings: 'Oswald', sans-serif;
   --font-body: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-size-base: 1rem;
-  --font-size-xs: 0.75rem;
-  --font-size-sm: 0.875rem;
-  --font-size-md: 1rem;
-  --font-size-lg: 1.25rem;
-  --font-size-h1: 2rem;
-  --font-size-h2: 1.75rem;
-  --font-size-h3: 1.5rem;
+  --font-size-base: 1.125rem;
+  --font-size-xs: 0.8125rem;
+  --font-size-sm: 0.9375rem;
+  --font-size-md: 1.0625rem;
+  --font-size-lg: 1.375rem;
+  --font-size-h1: 2.25rem;
+  --font-size-h2: 1.875rem;
+  --font-size-h3: 1.625rem;
   --line-height-base: 1.5;
   --line-height-tight: 1.2;
 
@@ -306,6 +306,76 @@ body {
 
 .question {
   padding-top: var(--space-lg);
+}
+
+/* Play Header Box */
+.play-header {
+  background: var(--color-navy);
+  color: var(--color-text-light);
+  padding: var(--space-lg);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-xl);
+  animation: fadeIn var(--duration-fast) var(--ease) forwards;
+}
+
+.play-header__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  cursor: pointer;
+  gap: var(--space-md);
+}
+
+.play-header__left {
+  flex: 1;
+}
+
+.play-header__caret {
+  font-size: var(--font-size-sm);
+  color: var(--color-primary);
+  transition: transform var(--duration-fast) var(--ease);
+  flex-shrink: 0;
+  margin-top: var(--space-xs);
+}
+
+.play-header.collapsed .play-header__caret {
+  transform: rotate(-90deg);
+}
+
+.play-header__label {
+  font-family: var(--font-headings);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-primary);
+  margin-bottom: var(--space-xs);
+}
+
+.play-header__title {
+  font-family: var(--font-headings);
+  font-size: var(--font-size-lg);
+  font-weight: 500;
+  line-height: 1.3;
+  margin-bottom: 0;
+}
+
+.play-header__summary {
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  opacity: 0.9;
+  margin-top: var(--space-sm);
+  overflow: hidden;
+  transition: max-height var(--duration-fast) var(--ease),
+              margin-top var(--duration-fast) var(--ease),
+              opacity var(--duration-fast) var(--ease);
+  max-height: 200px;
+}
+
+.play-header.collapsed .play-header__summary {
+  max-height: 0;
+  margin-top: 0;
+  opacity: 0;
 }
 
 .question__section {

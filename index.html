@@ -56,6 +56,17 @@
         <div id="screen-question" class="screen">
             <div class="question">
                 <button id="btn-back-question" class="btn-back" type="button" aria-label="Go back">&larr; Back</button>
+                <!-- Play Header (shown at start of each play) -->
+                <div id="play-header" class="play-header" hidden>
+                    <div class="play-header__top" id="play-header-toggle">
+                        <div class="play-header__left">
+                            <p class="play-header__label" id="play-header-label"></p>
+                            <h3 class="play-header__title" id="play-header-title"></h3>
+                        </div>
+                        <span class="play-header__caret" id="play-header-caret">▼</span>
+                    </div>
+                    <p class="play-header__summary" id="play-header-summary"></p>
+                </div>
                 <p class="question__section" id="question-section"></p>
                 <p class="question__counter" id="question-counter"></p>
                 <h2 class="question__text" id="question-text"></h2>
