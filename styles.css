@@ -139,18 +139,18 @@ body {
 
 .logo {
   color: var(--color-primary);
-  width: 28px;
-  height: 28px;
+  width: 42px;
+  height: 42px;
 }
 
 .logo-img {
-  height: 35px;
+  height: 52px;
   width: auto;
 }
 
 .logo-text {
   font-family: var(--font-headings);
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-lg);
   font-weight: 500;
   color: var(--color-navy);
   letter-spacing: -0.02em;
@@ -739,18 +739,55 @@ body {
   margin-bottom: var(--space-xl);
 }
 
-.thanks__contact {
+.thanks__contributors {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-2xl);
+  margin-top: var(--space-lg);
+}
+
+.contributor {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.contributor__photo {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--color-bg-light);
+  border: 2px solid var(--color-border-light);
+}
+
+.contributor__name {
   font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.contributor__title {
+  font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
 }
 
-.thanks__contact a {
+.contributor__email {
+  font-size: var(--font-size-xs);
   color: var(--color-primary);
   text-decoration: none;
 }
 
-.thanks__contact a:hover {
+.contributor__email:hover {
   text-decoration: underline;
+}
+
+.thanks__contact-label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-top: var(--space-xl);
+  margin-bottom: var(--space-sm);
 }
 
 /* ============================================

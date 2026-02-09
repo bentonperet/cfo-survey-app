@@ -71,8 +71,7 @@ const QUESTIONS = [
         options: [
           { text: 'PE-backed' },
           { text: 'Public' },
-          { text: 'Private (not PE-backed)' },
-          { text: 'Family-owned' }
+          { text: 'Private (not PE-backed)' }
         ]
       }
     ]
@@ -155,7 +154,7 @@ const QUESTIONS = [
       { text: 'Leadership fears losing customers if we tighten pricing' },
       { text: "We don't trust the underlying data" },
       { text: "Pricing decisions are made outside finance's influence" },
-      { text: "We haven't made this a priority yet" },
+      { text: "We haven't made this a priority yet / we don't know" },
       { text: 'Other (please specify)', isOther: true }
     ],
     tooltip: "In some cases, aggressive discounting actually decreases win rates. Customers interpret deep discounts as desperation or question product quality. The data often reveals pricing power you didn't know you had."
@@ -197,7 +196,9 @@ const QUESTIONS = [
     id: 10,
     section: 'Play 3: Operational Cash',
     text: "What has slowed progress on operational productivity?",
-    type: 'single',
+    subtext: 'Select up to 3',
+    type: 'multi',
+    maxSelections: 3,
     options: [
       { text: 'Change management challenges' },
       { text: 'IT bottlenecks / competing priorities' },
@@ -248,7 +249,8 @@ const QUESTIONS = [
       { text: 'Trust in forecast outputs' },
       { text: "Leadership adoption - they don't use it" },
       { text: 'Skills gap on the team' },
-      { text: "We're satisfied with our current approach" }
+      { text: "We're satisfied with our current approach" },
+      { text: "I don't know" }
     ]
     // No tooltip for Q13
   },
