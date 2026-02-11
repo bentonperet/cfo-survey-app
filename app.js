@@ -38,7 +38,7 @@ const HUBSPOT_FIELD_MAP = {
 
 // ===== GOOGLE SHEETS CONFIGURATION =====
 // Set this to the Google Apps Script web app URL after deploying
-const SHEETS_WEBHOOK_URL = '';
+const SHEETS_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycby98OtWbK0nA3ocfCmGCOZPvdv9wnmsjN-k7zc57eymLhcTMrjhMsyzojbZQLK6rWI/exec';
 
 // ===== PLAY HEADERS =====
 // Shown at the start of each play section
