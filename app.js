@@ -6,10 +6,39 @@
 // ===== CONFIGURATION =====
 const CONFIG = {
   playbookUrl: 'https://docs.google.com/document/d/1Cr4p_PzN4ORnFngp4lMvQsgTYbrdkDpES1_MwVw-am4/edit',
-  contactEmail: 'jason@altusnova.com',
-  // Data endpoint TBD - currently logs to console
-  submitEndpoint: ''
+  contactEmail: 'jason@altusnova.com'
 };
+
+// ===== HUBSPOT CONFIGURATION =====
+const HUBSPOT = {
+  portalId: '45991979',
+  formGuid: '3a374c67-d27d-4ea7-8570-4eb01b002617'
+};
+
+// Maps question IDs to existing HubSpot contact property names
+const HUBSPOT_FIELD_MAP = {
+  1:  'cfo_survey__your_role',
+  2:  'cfo_survey_company_profile',
+  3:  'cfo_survey_capital_allocation',
+  4:  'cfo_survey_capital_challenge',
+  5:  'cfo_survey_profitability_visibility',
+  6:  'cfo_survey_pricing_analytics',
+  7:  'cfo_survey_margin_limitation',
+  8:  'cfo_survey_ai_operational',
+  9:  'cfo_survey_ai_impact_area',
+  10: 'cfo_survey_productivity_blocker',
+  11: 'cfo_survey_forecasting_method',
+  12: 'cfo_survey_forecast_usage',
+  13: 'cfo_survey_forecasting_gap',
+  14: 'cfo_survey_other_initiative',
+  15: 'cfo_survey_underutilized_area',
+  16: 'cfo_survey_peer_insights',
+  17: 'cfo_survey_panel_interest'
+};
+
+// ===== GOOGLE SHEETS CONFIGURATION =====
+// Set this to the Google Apps Script web app URL after deploying
+const SHEETS_WEBHOOK_URL = '';
 
 // ===== PLAY HEADERS =====
 // Shown at the start of each play section
@@ -711,16 +740,105 @@ function submitForm(e) {
 
   console.log('Survey Submission:', submission);
 
-  // If endpoint configured, send data
-  if (CONFIG.submitEndpoint) {
-    fetch(CONFIG.submitEndpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(submission)
-    }).catch(err => console.error('Submit error:', err));
-  }
+  // Send to HubSpot and Google Sheets in parallel
+  submitToHubSpot();
+  submitToSheets(submission);
 
   showScreen('screen-thanks');
+}
+
+// ===== HUBSPOT SUBMISSION =====
+function getAnswerText(qId) {
+  const q = QUESTIONS.find(q => q.id === qId);
+  const answer = state.answers[qId];
+  if (answer === undefined || answer === null) return '';
+
+  if (q.type === 'single') {
+    if (q.hasOther && q.options[answer].isOther && state.otherText[qId]) {
+      return 'Other: ' + state.otherText[qId];
+    }
+    return q.options[answer].text;
+  } else if (q.type === 'multi') {
+    return answer.map(i => q.options[i].text).join('; ');
+  } else if (q.type === 'twopart') {
+    const parts = [];
+    q.parts.forEach((part, idx) => {
+      if (answer[idx] !== undefined) {
+        parts.push(part.label + ': ' + part.options[answer[idx]].text);
+      }
+    });
+    return parts.join('; ');
+  } else if (q.type === 'open') {
+    return (answer || '').trim();
+  }
+  return '';
+}
+
+function submitToHubSpot() {
+  const fields = [];
+
+  // Contact fields - split full name into first/last
+  const nameParts = state.respondent.name.split(' ');
+  fields.push({ objectTypeId: '0-1', name: 'firstname', value: nameParts[0] || '' });
+  fields.push({ objectTypeId: '0-1', name: 'lastname', value: nameParts.slice(1).join(' ') || '' });
+  fields.push({ objectTypeId: '0-1', name: 'email', value: state.respondent.email });
+  fields.push({ objectTypeId: '0-1', name: 'company', value: state.respondent.company || '' });
+
+  // Survey answer fields
+  QUESTIONS.forEach(q => {
+    const propName = HUBSPOT_FIELD_MAP[q.id];
+    if (!propName) return;
+    const value = getAnswerText(q.id);
+    if (value) {
+      fields.push({ objectTypeId: '0-1', name: propName, value: value });
+    }
+  });
+
+  // HubSpot tracking cookie (if HubSpot tracking script is on the page)
+  const context = {
+    pageUri: window.location.href,
+    pageName: document.title
+  };
+  const hutk = document.cookie.split('; ').find(c => c.startsWith('hubspotutk='));
+  if (hutk) context.hutk = hutk.split('=')[1];
+
+  const url = 'https://api.hsforms.com/submissions/v3/integration/submit/'
+    + HUBSPOT.portalId + '/' + HUBSPOT.formGuid;
+
+  fetch(url, {
+    method: 'POST',
+    mode: 'cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ submittedAt: Date.now(), fields: fields, context: context })
+  })
+    .then(r => r.ok ? console.log('HubSpot: submitted') : r.json().then(d => console.error('HubSpot error:', d)))
+    .catch(err => console.error('HubSpot submit failed:', err));
+}
+
+// ===== GOOGLE SHEETS SUBMISSION =====
+function submitToSheets(submission) {
+  if (!SHEETS_WEBHOOK_URL) return;
+
+  // Flatten to a simple key-value object for the sheet
+  const row = {
+    timestamp: submission.timestamp,
+    name: state.respondent.name,
+    email: state.respondent.email,
+    company: state.respondent.company || ''
+  };
+
+  QUESTIONS.forEach(q => {
+    row['q' + q.id] = getAnswerText(q.id);
+  });
+
+  fetch(SHEETS_WEBHOOK_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(row)
+  })
+    .then(() => console.log('Sheets: submitted'))
+    .catch(err => console.error('Sheets submit failed:', err));
 }
 
 function compileAnswers() {
