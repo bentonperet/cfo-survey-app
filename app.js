@@ -73,8 +73,8 @@ const QUESTIONS = [
     options: [
       { text: 'CFO' },
       { text: 'VP Finance' },
-      { text: 'Head of FP&A' },
       { text: 'Controller' },
+      { text: 'M&A Leader' },
       { text: 'Other senior finance leader' }
     ]
   },
@@ -344,6 +344,7 @@ const state = {
   answers: {},
   otherText: {},
   respondent: null,
+  sessionId: null,
   seenPlays: {} // Track which plays have been shown expanded
 };
 
@@ -683,6 +684,9 @@ function advanceQuestion() {
     }
   }
 
+  // Save partial answers to Sheets (fire-and-forget)
+  savePartialToSheets();
+
   const next = state.currentQuestion + 1;
   if (next < QUESTIONS.length) {
     renderQuestion(next);
@@ -743,6 +747,16 @@ function submitForm(e) {
   // Send to HubSpot and Google Sheets in parallel
   submitToHubSpot();
   submitToSheets(submission);
+
+  // Mark partial session as completed
+  if (SHEETS_WEBHOOK_URL && state.sessionId) {
+    fetch(SHEETS_WEBHOOK_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId: state.sessionId, isPartial: false })
+    }).catch(err => console.error('Partial completion marker failed:', err));
+  }
 
   showScreen('screen-thanks');
 }
@@ -815,6 +829,28 @@ function submitToHubSpot() {
     .catch(err => console.error('HubSpot submit failed:', err));
 }
 
+// ===== PARTIAL SAVE (fire-and-forget on each "Next") =====
+function savePartialToSheets() {
+  if (!SHEETS_WEBHOOK_URL || !state.sessionId) return;
+
+  const payload = {
+    sessionId: state.sessionId,
+    timestamp: new Date().toISOString(),
+    isPartial: true
+  };
+
+  QUESTIONS.forEach(q => {
+    payload['q' + q.id] = getAnswerText(q.id);
+  });
+
+  fetch(SHEETS_WEBHOOK_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }).catch(err => console.error('Partial save failed:', err));
+}
+
 // ===== GOOGLE SHEETS SUBMISSION =====
 function submitToSheets(submission) {
   if (!SHEETS_WEBHOOK_URL) return;
@@ -884,7 +920,12 @@ function compileAnswers() {
 // ===== EVENT LISTENERS =====
 document.addEventListener('DOMContentLoaded', () => {
   // Start button
-  $('#btn-start').addEventListener('click', () => renderQuestion(0));
+  $('#btn-start').addEventListener('click', () => {
+    state.sessionId = (typeof crypto !== 'undefined' && crypto.randomUUID)
+      ? crypto.randomUUID()
+      : 'sess-' + Math.random().toString(36).substr(2, 9) + '-' + Date.now();
+    renderQuestion(0);
+  });
 
   // Next button
   $('#btn-next').addEventListener('click', advanceQuestion);
