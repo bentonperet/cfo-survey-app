@@ -113,11 +113,51 @@ body {
    ============================================ */
 
 .header {
+  position: relative;
   padding: var(--space-md) var(--space-lg);
   display: flex;
   align-items: center;
   justify-content: center;
   padding-top: calc(var(--space-md) + 4px);
+}
+
+/* Language Toggle */
+.lang-toggle {
+  display: flex;
+  position: absolute;
+  right: var(--space-lg);
+}
+
+.lang-toggle__btn {
+  background: none;
+  border: 1px solid var(--color-border-light);
+  font-family: var(--font-body);
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  padding: 4px 10px;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  transition: all var(--duration-fast) var(--ease);
+}
+
+.lang-toggle__btn:first-child {
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+  border-right: none;
+}
+
+.lang-toggle__btn:last-child {
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.lang-toggle__btn--active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-text-light);
+}
+
+.lang-toggle__btn:hover:not(.lang-toggle__btn--active) {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }
 
 .header__logos {
@@ -826,4 +866,15 @@ body {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+/* Honeypot - invisible to humans */
+.form__field--hp {
+  position: absolute;
+  left: -9999px;
+  top: -9999px;
+  height: 0;
+  width: 0;
+  overflow: hidden;
+  opacity: 0;
 }
