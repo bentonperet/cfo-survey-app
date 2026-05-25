@@ -39,7 +39,7 @@ const HUBSPOT_FIELD_MAP = {
 };
 
 // ===== GOOGLE SHEETS CONFIGURATION =====
-const SHEETS_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycby98OtWbK0nA3ocfCmGCOZPvdv9wnmsjN-k7zc57eymLhcTMrjhMsyzojbZQLK6rWI/exec';
+const SHEETS_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwna5TIZZ9t9obr6e47kdDXqVMum1Yw6-QbCpx7YBQ_c9sVZ7JerGrv_v285O8s_uQD/exec';
 
 // ===== UI TEXT (static elements outside questions) =====
 const UI = {
@@ -922,16 +922,7 @@ function submitForm(e) {
   console.log('Survey Submission:', submission);
 
   submitToHubSpot();
-  submitToSheets(submission);
-
-  if (SHEETS_WEBHOOK_URL && state.sessionId) {
-    fetch(SHEETS_WEBHOOK_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: SHEETS_TOKEN, sessionId: state.sessionId, isPartial: false })
-    }).catch(err => console.error('Partial completion marker failed:', err));
-  }
+  submitCompletionToSheets(submission);
 
   showScreen('screen-thanks');
 }
@@ -1025,12 +1016,16 @@ function savePartialToSheets() {
   }).catch(err => console.error('Partial save failed:', err));
 }
 
-// ===== GOOGLE SHEETS SUBMISSION =====
-function submitToSheets(submission) {
-  if (!SHEETS_WEBHOOK_URL) return;
+// ===== GOOGLE SHEETS COMPLETION =====
+// Single-call completion: sessionId + identity + answers in one payload.
+// Server upserts the existing partial row keyed by sessionId.
+function submitCompletionToSheets(submission) {
+  if (!SHEETS_WEBHOOK_URL || !state.sessionId) return;
 
-  const row = {
+  const payload = {
     token: SHEETS_TOKEN,
+    sessionId: state.sessionId,
+    isPartial: false,
     timestamp: submission.timestamp,
     name: state.respondent.name,
     email: state.respondent.email,
@@ -1039,17 +1034,17 @@ function submitToSheets(submission) {
   };
 
   QUESTIONS.forEach(q => {
-    row['q' + q.id] = getAnswerText(q.id);
+    payload['q' + q.id] = getAnswerText(q.id);
   });
 
   fetch(SHEETS_WEBHOOK_URL, {
     method: 'POST',
     mode: 'no-cors',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(row)
+    body: JSON.stringify(payload)
   })
-    .then(() => console.log('Sheets: submitted'))
-    .catch(err => console.error('Sheets submit failed:', err));
+    .then(() => console.log('Sheets: completion submitted'))
+    .catch(err => console.error('Sheets completion failed:', err));
 }
 
 function compileAnswers() {
