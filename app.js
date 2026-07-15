@@ -145,9 +145,9 @@ const QUESTIONS = [
     type: 'single',
     options: [
       { text: 'CFO', text_es: 'CFO' },
-      { text: 'VP Finance', text_es: 'VP de Finanzas' },
+      { text: 'CEO', text_es: 'CEO' },
       { text: 'Controller', text_es: 'Controller' },
-      { text: 'M&A Leader', text_es: 'Lider de M&A' },
+      { text: 'COO/Operations', text_es: 'COO/Operaciones' },
       { text: 'Other senior finance leader', text_es: 'Otro lider senior de finanzas' }
     ]
   },
